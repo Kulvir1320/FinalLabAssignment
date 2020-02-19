@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class UsersActivity extends AppCompatActivity {
     ListView listView;
     DataBaseHelper mDatabase;
     List<User> userList;
+    SearchView searchView;
+    List<User> filterList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,39 @@ public class UsersActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         userList = new ArrayList<>();
         mDatabase = new DataBaseHelper(this);
+        filterList = new ArrayList<>();
+        searchView = findViewById(R.id.searchView);
         loadUsers();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if(!newText.isEmpty()) {
+                    filterList.clear();
+                    for (int i = 0; i < userList.size(); i++) {
+                        User getcontact = userList.get(i);
+                        if (getcontact.firstname.contains(newText)) {
+                            filterList.add(getcontact);
+                        }
+                    }
+                    UserAdapter userAdapter = new UserAdapter(UsersActivity.this,R.layout.list_layout,filterList,mDatabase);
+                    listView.setAdapter(userAdapter);
+                }
+                if(newText.isEmpty()){
+//                    UserAdapter userAdapter = new UserAdapter(this,R.layout.list_layout,userList,mDatabase);
+//                listView.setAdapter(userAdapter);
+                    UserAdapter userAdapter = new UserAdapter(UsersActivity.this,R.layout.list_layout,userList,mDatabase);
+                    listView.setAdapter(userAdapter);
+                }
+                return false;
+            }
+        });
     }
 
     private void loadUsers() {
@@ -44,10 +79,10 @@ public class UsersActivity extends AppCompatActivity {
 
             System.out.println("data loaded");
 
-            //show items in a listview
-            // we use a custom adapter to show employee
-            UserAdapter userAdapter = new UserAdapter(this, R.layout.list_layout, userList, mDatabase);
+
+            UserAdapter userAdapter = new UserAdapter(this,R.layout.list_layout,userList,mDatabase);
             listView.setAdapter(userAdapter);
+
         }
     }
 }

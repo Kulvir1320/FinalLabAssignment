@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,UsersActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });
@@ -64,4 +65,12 @@ public class MainActivity extends AppCompatActivity {
        }
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        firstName.setText("");
+        lastName.setText("");
+        address.setText("");
+        phone.setText("");
+    }
 }

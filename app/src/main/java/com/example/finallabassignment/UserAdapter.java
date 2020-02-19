@@ -8,11 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class UserAdapter extends ArrayAdapter {
@@ -22,7 +26,7 @@ public class UserAdapter extends ArrayAdapter {
     DataBaseHelper mDatabase;
 
     public UserAdapter(@NonNull  Context mContext, int layoutResource, List<User> user, DataBaseHelper mDatabase) {
-        super(mContext, layoutResource);
+        super(mContext, layoutResource,user);
         this.mContext = mContext;
         this.layoutResource = layoutResource;
         this.user = user;
@@ -46,7 +50,7 @@ public class UserAdapter extends ArrayAdapter {
          tvfirstname.setText(users.getFirstname());
          tvlastname.setText(users.getLastName());
          tvaddress.setText(users.getAddress());
-         tvphone.setText(users.getPhone());
+         tvphone.setText(String.valueOf(users.getPhone()));
 
          v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
              @Override
@@ -67,7 +71,50 @@ public class UserAdapter extends ArrayAdapter {
      private  void updateUser(final User user){
 
 
-     }
+         AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+         LayoutInflater inflater = LayoutInflater.from(mContext);
+         View v = inflater.inflate(R.layout.dialog_update, null);
+         alert.setView(v);
+
+         final AlertDialog alertDialog = alert.create();
+         alertDialog.show();
+
+         final EditText fname = v.findViewById(R.id.et_firstname);
+         final EditText lname = v.findViewById(R.id.et_lastname);
+         final EditText addrs = v.findViewById(R.id.et_address);
+         final  EditText phn = v.findViewById(R.id.et_phone);
+
+         fname.setText(user.getFirstname());
+         lname.setText(user.getLastName());
+         addrs.setText(user.getAddress());
+         phn.setText(String.valueOf(user.getPhone()));
+
+
+         v.findViewById(R.id.btn_update).setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 String firstname = fname.getText().toString().trim();
+                 String lastname = lname.getText().toString().trim();
+                 String address = addrs.getText().toString().trim();
+                 String phone = phn.getText().toString().trim();
+                 if(mDatabase.updateUser(user.getId(),firstname,lastname,address,Integer.parseInt(phone))){
+                     Toast.makeText(mContext, "employee update", Toast.LENGTH_SHORT).show();
+                     loadUser();
+                 }
+                 else
+                 {
+                     Toast.makeText(mContext, "employee update", Toast.LENGTH_SHORT).show();
+                 }
+                 alertDialog.dismiss();
+             }
+
+             });
+         };
+
+
+
+
+
      private  void deleteUser(final User user) {
          AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
          builder.setTitle("Are you sure");
@@ -107,9 +154,11 @@ public class UserAdapter extends ArrayAdapter {
              while (cursor.moveToNext());
              cursor.close();
          }
-//         notifyDataSetChanged();
+         notifyDataSetChanged();
 
      }
 
     }
+
+
 
