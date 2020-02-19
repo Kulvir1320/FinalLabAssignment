@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FinalLabAssignment</string>
+    <string name="first_name">first_name</string>
+    <string name="last_name">last_name</string>
+    <string name="phone">phone</string>
+    <string name="address">address</string>
+</resources>
